@@ -97,14 +97,14 @@ def parse_file(filename):
     return results
 
 def parse_dir(path, pattern):
-    NAME = '(?P<name>.+)'
-    QP = '(?P<qp>\d+)'
+    SEQUENCE = '(?P<sequence>.+)'
+    SEQUENCE_ID = '(?P<sequence_id>\d+)'
 
     results = dict()
 
     re_filename = re.compile(pattern.replace('*', '.*')
-            .replace('/n', NAME)
-            .replace('/q', QP))
+            .replace('/n', SEQUENCE)
+            .replace('/p', SEQUENCE_ID))
 
     for filename in os.listdir(path):
         file = os.path.join(path, filename)
@@ -116,12 +116,12 @@ def parse_dir(path, pattern):
         if not match:
             continue
 
-        name = match.group('name')
-        qp = match.group('qp')
+        sequence = match.group('sequence')
+        sequence_id = match.group('sequence_id')
 
-        if name not in results:
-            results[name] = dict()
+        if sequence not in results:
+            results[sequence] = dict()
 
-        results[name][qp] = parse_file(file)
+        results[sequence][sequence_id] = parse_file(file)
 
     return results

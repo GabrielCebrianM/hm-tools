@@ -26,7 +26,18 @@ def parse_arguments(argv):
     argument_parser = argparse.ArgumentParser(description='Parses the result '
             'files of two directories and provides the per-sequence results '
             'in terms of coding efficiency (BD-rate) and encoding time '
-            '(speed-up and time reduction).')
+            '(speed-up and time reduction).', epilog='Regarding filename '
+            'patterns, they may include the /n and /p tags to indicate the '
+            'place in which they contain the sequence name (or any equivalent '
+            'identifier) and the configuration parameter modified in each '
+            'execution (usually the QP). Example: output files such as '
+            '\'RA_QP32_RaceHorses.out\' would need the pattern '
+            '\'RA_QP/p_/n.out\'. The results of all the files that match a '
+            'pattern and share their /n tag will be used for the calculation '
+            'of the rate-distortion curves of the BD-rate metric, regardless '
+            'of their /p tag. However, only those files with the same /n and '
+            '/p tags in both directories will be used for the timing results, '
+            'and an average will be shown per sequence.')
 
     argument_parser.add_argument('-o', '--old', action='store_true',
             default=False, required=False, help='use the old cubic polynomial '
@@ -41,14 +52,14 @@ def parse_arguments(argv):
     argument_parser.add_argument('-bp', '--base_pattern', nargs=1, type=str,
             required=True, help='pattern matching the filenames of the results '
             'of the baseline encoding. It must be a valid Python regular '
-            'expression.', dest='base_pattern')
+            'expression (see note below).', dest='base_pattern')
     argument_parser.add_argument('-t', '--test', nargs=1, type=str,
             required=True, help='path of the directory containing the results '
-            'of the encoding tested.', dest='test_path')
+            'of the encoding to be tested.', dest='test_path')
     argument_parser.add_argument('-tp', '--test_pattern', nargs=1, type=str,
             required=True, help='pattern matching the filenames of the results '
-            'of the encoding being tested. It must be a valid Python regular '
-            'expression.', dest='test_pattern')
+            'of the encoding to be tested. It must be a valid Python regular '
+            'expression (see note below).', dest='test_pattern')
 
     arguments = argument_parser.parse_args(argv)
 
@@ -57,10 +68,10 @@ def parse_arguments(argv):
 
     if not os.path.isdir(arguments.base_path[0]):
         argument_parser.error('path of the baseline encoding is not a '
-            'directory')
+                'directory')
     if not os.path.isdir(arguments.test_path[0]):
         argument_parser.error('path of the encoding being tested is not a '
-            'directory')
+                'directory')
     if arguments.scale[0] < 0:
         argument_parser.error('scale must be a positive value.')
 

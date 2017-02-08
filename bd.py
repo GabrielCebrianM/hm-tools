@@ -68,9 +68,9 @@ def main(argv):
     test = sorted(set(test))
 
     if use_old_bdrate:
-        bdrate = hevctools.bd.bdrate_old(base, test)
+        bdrate = hmtools.bd.bdrate_old(base, test)
     else:
-        bdrate = hevctools.bd.bdrate(base, test)
+        bdrate = hmtools.bd.bdrate(base, test)
 
     print('{:0.4f}'.format(bdrate))
 

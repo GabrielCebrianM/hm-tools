@@ -133,9 +133,9 @@ def calculate_results(sequences, base_results, test_results, use_old_bdrate):
                 base_rd = sorted(base_rd)
                 test_rd = sorted(test_rd)
                 if use_old_bdrate:
-                    bdrate = hevctools.bd.bdrate_old(base_rd, test_rd)
+                    bdrate = hmtools.bd.bdrate_old(base_rd, test_rd)
                 else:
-                    bdrate = hevctools.bd.bdrate(base_rd, test_rd)
+                    bdrate = hmtools.bd.bdrate(base_rd, test_rd)
 
                 results[sequence]['bdrate'] = bdrate
                 all_bdrates.append(bdrate)
@@ -194,8 +194,8 @@ def print_results(sequences, results, average, scale):
 def main(argv):
     arguments = parse_arguments(argv[1:])
 
-    base_results = hevctools.parser.parse_dir(arguments.base_path[0], arguments.base_pattern[0])
-    test_results = hevctools.parser.parse_dir(arguments.test_path[0], arguments.test_pattern[0])
+    base_results = hmtools.parser.parse_dir(arguments.base_path[0], arguments.base_pattern[0])
+    test_results = hmtools.parser.parse_dir(arguments.test_path[0], arguments.test_pattern[0])
     sequences = sort_sequences(set(base_results.keys() & test_results.keys()))
 
     results, average = calculate_results(sequences, base_results, test_results, arguments.use_old_bdrate)

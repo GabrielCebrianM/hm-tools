@@ -13,7 +13,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import locale
 import os
 import os.path
 import re
@@ -25,11 +24,6 @@ def parse_file(filename):
     Keyword arguments:
     filename -- Path of the file to parse.
     """
-    locale.setlocale(locale.LC_ALL, 'es_ES.utf8')
-
-
-
-
     # This constant RE represents any number without thousands separator.
     NUMBER = '(?:[-+]?\d*[,.]\d+|[-+]?\d+)'
 
@@ -76,7 +70,7 @@ def parse_file(filename):
             if 'perf' not in results:
                 results['perf'] = dict()
             try:
-                results['perf']['frequency'] = float(match.group(1).replace(',', '.')) #locale.atof(match.group(1))
+                results['perf']['frequency'] = float(match.group(1).replace(',', '.'))
             except:
                 if not results['perf']:
                     results.pop('perf', None)
@@ -86,7 +80,7 @@ def parse_file(filename):
             if 'perf' not in results:
                 results['perf'] = dict()
             try:
-                results['perf']['time'] = float(match.group(1).replace(',', '.')) #locale.atof(match.group(1))
+                results['perf']['time'] = float(match.group(1).replace(',', '.'))
             except:
                 if not results['perf']:
                     results.pop('perf', None)

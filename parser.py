@@ -43,6 +43,10 @@ def parse_arguments(argv):
             default=False, required=False, help='use the old cubic polynomial '
             'interpolation function to calculate the BD-rate, instead of the '
             'piecewise cubic interpolation function.', dest='use_old_bdrate')
+    argument_parser.add_argument('-p', '--perf', action='store_true',
+            default=False, required=False, help='use the output of the \'perf '
+            'stat\' command to calculate the timing values instead of the time '
+            'provided by the encoder itself.', dest='use_perf')
     argument_parser.add_argument('-s', '--scale', nargs=1, type=int,
             default=4, required=False, help='number of digits shown to the '
             'right of the decimal point.', dest='scale')
@@ -103,7 +107,7 @@ def sort_sequences(sequences):
 
     return sorted_sequences
 
-def calculate_results(sequences, base_results, test_results, use_old_bdrate):
+def calculate_results(sequences, base_results, test_results, use_old_bdrate, use_perf):
     results = dict()
 
     all_bdrates = list()
@@ -127,13 +131,21 @@ def calculate_results(sequences, base_results, test_results, use_old_bdrate):
 
             sequence_ids = set(base_results[sequence].keys() & test_results[sequence].keys())
             for sequence_id in sequence_ids:
-                if 'perf' in base_results[sequence][sequence_id] and 'time' in base_results[sequence][sequence_id]['perf'] \
-                        and 'perf' in test_results[sequence][sequence_id] and 'time' in test_results[sequence][sequence_id]['perf']:
-                    base_time = base_results[sequence][sequence_id]['perf']['time']
-                    test_time = test_results[sequence][sequence_id]['perf']['time']
+                if use_perf:
+                    if 'perf' in base_results[sequence][sequence_id] and 'time' in base_results[sequence][sequence_id]['perf'] \
+                            and 'perf' in test_results[sequence][sequence_id] and 'time' in test_results[sequence][sequence_id]['perf']:
+                        base_time = base_results[sequence][sequence_id]['perf']['time']
+                        test_time = test_results[sequence][sequence_id]['perf']['time']
 
-                    speedups.append(base_time / test_time)
-                    time_reductions.append((base_time - test_time) / base_time)
+                        speedups.append(base_time / test_time)
+                        time_reductions.append((base_time - test_time) / base_time)
+                else:
+                    if 'time' in base_results[sequence][sequence_id] and 'time' in test_results[sequence][sequence_id]:
+                        base_time = base_results[sequence][sequence_id]['time']
+                        test_time = test_results[sequence][sequence_id]['time']
+
+                        speedups.append(base_time / test_time)
+                        time_reductions.append((base_time - test_time) / base_time)
 
             results[sequence] = dict()
             results[sequence]['bdrate'] = float('nan')
@@ -205,11 +217,11 @@ def print_results(sequences, results, average, scale):
 def main(argv):
     arguments = parse_arguments(argv[1:])
 
-    base_results = hmtools.parser.parse_dir(arguments.base_path[0], arguments.base_pattern[0])
-    test_results = hmtools.parser.parse_dir(arguments.test_path[0], arguments.test_pattern[0])
+    base_results = hmtools.parser.parse_dir(arguments.base_path[0], arguments.base_pattern[0], arguments.use_perf)
+    test_results = hmtools.parser.parse_dir(arguments.test_path[0], arguments.test_pattern[0], arguments.use_perf)
     sequences = sort_sequences(set(base_results.keys() & test_results.keys()))
 
-    results, average = calculate_results(sequences, base_results, test_results, arguments.use_old_bdrate)
+    results, average = calculate_results(sequences, base_results, test_results, arguments.use_old_bdrate, arguments.use_perf)
 
     print_results(sequences, results, average, arguments.scale[0])
 

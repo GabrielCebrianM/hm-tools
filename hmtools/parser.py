@@ -17,7 +17,7 @@ import os
 import os.path
 import re
 
-def parse_file(filename):
+def parse_file(filename, use_perf):
     """Parses a HM result file and returns a dictionary with the values of the
     summary (encoding time, and bitrate and psnr per slice type).
 
@@ -33,10 +33,11 @@ def parse_file(filename):
             .replace('{}', NUMBER))
     re_time = re.compile('^ Total Time:\s*({}) sec.$'
             .replace('{}', NUMBER))
-    re_perf_frequency = re.compile('.*#\s*({})\s*.?Hz.*$'
-            .replace('{}', NUMBER))
-    re_perf_time = re.compile('^\s*({})\s*seconds time elapsed'
-            .replace('{}', NUMBER))
+    if use_perf:
+        re_perf_frequency = re.compile('.*#\s*({})\s*.?Hz.*$'
+                .replace('{}', NUMBER))
+        re_perf_time = re.compile('^\s*({})\s*seconds time elapsed'
+                .replace('{}', NUMBER))
 
     file = open(filename, 'r')
 
@@ -65,32 +66,33 @@ def parse_file(filename):
             except:
                 pass
             continue
-        match = re_perf_frequency.search(line)
-        if match:
-            if 'perf' not in results:
-                results['perf'] = dict()
-            try:
-                results['perf']['frequency'] = float(match.group(1).replace(',', '.'))
-            except:
-                if not results['perf']:
-                    results.pop('perf', None)
-            continue
-        match = re_perf_time.search(line)
-        if match:
-            if 'perf' not in results:
-                results['perf'] = dict()
-            try:
-                results['perf']['time'] = float(match.group(1).replace(',', '.'))
-            except:
-                if not results['perf']:
-                    results.pop('perf', None)
-            continue
+        if use_perf:
+            match = re_perf_frequency.search(line)
+            if match:
+                if 'perf' not in results:
+                    results['perf'] = dict()
+                try:
+                    results['perf']['frequency'] = float(match.group(1).replace(',', '.'))
+                except:
+                    if not results['perf']:
+                        results.pop('perf', None)
+                continue
+            match = re_perf_time.search(line)
+            if match:
+                if 'perf' not in results:
+                    results['perf'] = dict()
+                try:
+                    results['perf']['time'] = float(match.group(1).replace(',', '.'))
+                except:
+                    if not results['perf']:
+                        results.pop('perf', None)
+                continue
 
     file.close()
 
     return results
 
-def parse_dir(path, pattern):
+def parse_dir(path, pattern, use_perf):
     SEQUENCE = '(?P<sequence>.+)'
     SEQUENCE_ID = '(?P<sequence_id>\d+)'
 
@@ -116,6 +118,6 @@ def parse_dir(path, pattern):
         if sequence not in results:
             results[sequence] = dict()
 
-        results[sequence][sequence_id] = parse_file(file)
+        results[sequence][sequence_id] = parse_file(file, use_perf)
 
     return results

@@ -25,7 +25,7 @@ def parse_arguments(argv):
     to use piecewiese or cubic interpolation.
 
     Keyword arguments:
-    argv -- command line arguments.
+    argv -- Command line arguments.
     """
     argument_parser = argparse.ArgumentParser(description='Calculates the '
             'BD-rate between two rate-distortion curves.')

@@ -23,6 +23,13 @@ import scipy.stats.mstats
 import sys
 
 def parse_arguments(argv):
+    """Parses the command line arguments and checks that they meet the
+    requirements to perform the operations of the program. Returns a Namespace
+    object whose attributes are the arguments.
+
+    Keyword arguments:
+    argv -- Command line arguments.
+    """
     argument_parser = argparse.ArgumentParser(description='Parses the result '
             'files of two directories and provides the per-sequence results '
             'in terms of coding efficiency (BD-rate) and encoding time '
@@ -82,6 +89,12 @@ def parse_arguments(argv):
     return arguments
 
 def sort_sequences(sequences):
+    """Returns a dictionary with the sequences categorized by class. Sequences
+    that do not match any class are classified as 'Uncategorized'.
+
+    Keyword arguments:
+    sequences -- List of sequences.
+    """
     test_sequences = collections.OrderedDict()
     test_sequences['Class A'] = ['Traffic', 'PeopleOnStreet', 'Nebuta', 'SteamLocomotive']
     test_sequences['Class B'] = ['Kimono', 'ParkScene', 'Cactus', 'BasketballDrive', 'BQTerrace']
@@ -108,6 +121,18 @@ def sort_sequences(sequences):
     return sorted_sequences
 
 def calculate_results(sequences, base_results, test_results, use_old_bdrate, use_perf):
+    """Processes the results to calculate the coding efficiency and timing
+    results of the tested encoding with respect to the baseline. Return both
+    individual results and average values.
+
+    Keyword arguments:
+    sequences -- Dictionary of sequence classes, and sequences to analyze.
+    base_results -- Results of the baseline encoding.
+    test_results -- Results of the encoding being tested.
+    use_old_bdrate -- Boolean parameter to use old BD-rate measure.
+    use_perf -- Boolean parameter to use perf timing values instead of the ones
+            reported in the result files.
+    """
     results = dict()
 
     all_bdrates = list()
@@ -188,6 +213,14 @@ def calculate_results(sequences, base_results, test_results, use_old_bdrate, use
     return results, average
 
 def print_results(sequences, results, average, scale):
+    """Prints the results in table format.
+
+    Keyword arguments:
+    sequences -- Dictionary of sequence classes, and sequences to print.
+    results -- Coding efficiency and timing results per sequence.
+    average -- Average coding efficiency and timing results.
+    scale -- Number of digits shown to the right of the decimal point.
+    """
     HEADER = ['Sequence', 'BD-Rate (%)', 'Speed-Up', 'Time Reduction (%)']
 
     widths = dict()

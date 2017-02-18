@@ -18,11 +18,13 @@ import os.path
 import re
 
 def parse_file(filename, use_perf):
-    """Parses a HM result file and returns a dictionary with the values of the
+    """Parses a result file and returns a dictionary with the values of the
     summary (encoding time, and bitrate and psnr per slice type).
 
     Keyword arguments:
     filename -- Path of the file to parse.
+    use_perf -- Boolean parameter to use perf timing values instead of the ones
+            reported in the result files.
     """
     # This constant RE represents any number without thousands separator.
     NUMBER = '(?:[-+]?\d*[,.]\d+|[-+]?\d+)'
@@ -93,6 +95,17 @@ def parse_file(filename, use_perf):
     return results
 
 def parse_dir(path, pattern, use_perf):
+    """Parses the result files contained in a directory and returns a dictionary
+    with the values of the summary (encoding time, and bitrate and psnr per
+    slice type).
+
+    Keyword arguments:
+    path -- Path of the directory.
+    pattern -- Pattern of the filename used to determine the sequence name and
+            the identifier.
+    use_perf -- Boolean parameter to use perf timing values instead of the ones
+            reported in the result files.
+    """
     SEQUENCE = '(?P<sequence>.+)'
     SEQUENCE_ID = '(?P<sequence_id>\d+)'
 
